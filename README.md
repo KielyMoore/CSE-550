@@ -1,2 +1,8 @@
 # CSE-550
-CSE 550 Software Design Project
+
+## Authors:
+* Brady Gherman
+* Christopher Moore
+* James Reilly
+* Joshua Riddell
+* Justyn Powell
