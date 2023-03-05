@@ -4,7 +4,7 @@ from tkinter import filedialog
 from tkinter import ttk
 from datetime import datetime
 
-from dataloader import loadData
+from dataloader import loadData, plot_Acc
 
 def select_folder():
     folder_path = filedialog.askdirectory()
@@ -55,16 +55,18 @@ def submit():
         "end_date" : end_date.get(),
         "user" : user.get(),
         "columns": {
-            "ACC_Mag" : ACC_Mag.get(),
-            "Eda" : Eda.get(),
-            "temp" : temp.get(),
-            "movement_intensity" : movement_intensity.get(),
-            "step_count" : step_count.get(),
-            "rest" : rest.get(),
-            "on_wrist" : on_wrist.get()
+            "Acc magnitude avg" : ACC_Mag.get(),
+            "Eda avg" : Eda.get(),
+            "Temp avg" : temp.get(),
+            "Movement intensity" : movement_intensity.get(),
+            "Steps count" : step_count.get(),
+            "Rest" : rest.get(),
+            "On Wrist" : on_wrist.get()
         }
     }
-    loadData(filter)
+    data = loadData(filter)
+    plot_Acc(data)
+
     
 
 
