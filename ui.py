@@ -4,7 +4,7 @@ from tkinter import filedialog
 from tkinter import ttk
 from datetime import datetime
 
-from dataloader import loadData, plot_Acc
+from dataloader import loadData, plot_Acc, plot_Eda, plot_Temp
 
 def select_folder():
     folder_path = filedialog.askdirectory()
@@ -64,8 +64,17 @@ def submit():
             "On Wrist" : on_wrist.get()
         }
     }
+    
     data = loadData(filter)
-    plot_Acc(data)
+    
+    if "Acc magnitude avg" in data.columns:
+        plot_Acc(data)
+    
+    if "Eda avg" in data.columns:
+        plot_Eda(data)
+    
+    if "Temp avg" in data.columns:
+        plot_Temp(data)
 
     
 
