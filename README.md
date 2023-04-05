@@ -1,7 +1,7 @@
 # CSE-550
 
 ## Authors:
-* Brady Gherman
+* Brady Gehrman
 * Christopher Moore
 * James Reilly
 * Joshua Riddell
