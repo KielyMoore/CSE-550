@@ -6,29 +6,29 @@ from Plot import DataPlot
 
 
 def loadData(filter):
+    # Ideally data is loaded from a sever and stored locally
     filePath = "./Dataset/" + datetime.strptime(
         filter["start_date"], '%m/%d/%Y').strftime('%Y%m%d') + "/" + filter["user"] + "/summary.csv"
     data = pd.read_csv(filePath)
-    # Ideally data is loaded from a sever and stored locally
 
-    columns_to_drop = []
+    # configure a new "times" column for the dataframe that will represent the timestamp values
+    if filter["localTime"]:
+        # fill the "times" column with calculated "Local Time" timestamps
+        data["times"] = data.apply(calc_time_col, axis=1)
+    else:
+        # fill the "times" column with "UTC" timestamps
+        data["times"] = data["Datetime (UTC)"]
+
+    # Drop the time related columns now that the time is stored in the "times" column
+    columns_to_drop = ["Datetime (UTC)", "Timezone (minutes)",
+                       "Unix Timestamp (UTC)"]
+
     for column in filter["columns"]:
         if not filter["columns"][column]:
             columns_to_drop.append(column)
 
     # Drop unneeded columns
     data = data.drop(columns=columns_to_drop, axis=1)
-
-    if filter["localTime"]:
-        # configure panda's dataframe to create a new column called times that is equal to local time
-        data["times"] = data.apply(calc_time_col, axis=1)
-    else:
-        # configure panda's dataframe to use create a new column called times that is equal to UTC time
-        data["times"] = data["Datetime (UTC)"]
-
-    # Drop the time related columns now that the time is stored in the times column
-    data = data.drop(["Datetime (UTC)", "Timezone (minutes)",
-                     "Unix Timestamp (UTC)"], axis=1)
 
     print(data.columns)
 
@@ -37,6 +37,7 @@ def loadData(filter):
     return data
 
 
+# function used to fill each "time" column row using the corresponding "Datetime (UTC)" and "Timezone (minutes)" row
 def calc_time_col(row):
     return convert_utc_to_local(row["Datetime (UTC)"], row["Timezone (minutes)"])
 
@@ -54,6 +55,7 @@ def convert_utc_to_local(utc_string, offset_minutes):
     return local_dt.strftime('%Y-%m-%d %H:%M:%S')
 
 
+# function used to take the panda's dataframe and construct an array of DataPlot objects (could also be an object)
 def createDataPlotObjects(data: pd.DataFrame):
     dataPlots = []
     for col_name in data.columns:
@@ -66,9 +68,7 @@ def createDataPlotObjects(data: pd.DataFrame):
     return dataPlots
 
 
-# Acc, Eda, Temp are the only columns that make sense to graph
-# not sure how we would want to visualize the other columns
-
+# DEPRECATED For Now
 # TODO fix axis ticks. currently every timestamp is being displayed
 
 

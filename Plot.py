@@ -1,10 +1,13 @@
 import pandas as pd
 import matplotlib.pyplot as plt
+from datetime import datetime
 import statistics
 
 
 class DataPlot:
-    def __init__(self, df, propertyName):
+    # the df property is the original panda's dataframe for a data property, this property is ReadOnly
+    # the times and values properties are used when filtering the time and data columns within the data frame, they are also used when plotting the data and performing statistics
+    def __init__(self, df: pd.DataFrame, propertyName: str):
         self.df = df
         self.times = df['times']
         self.values = df[propertyName]
@@ -38,20 +41,21 @@ class DataPlot:
         # return the plot itself, so that it can be placed its own widget
         return plt
 
-    def changeGraphType(self, new_graph_type):
+    def changeGraphType(self, new_graph_type: str):
         self.graphType = new_graph_type
 
-    def filterData(self, start_time, end_time):
-        print(
-            "set time and data arrays by filtering down the initial Panda's dataframe (df)")
+    def filterData(self, start_time: str, end_time: str):
+        start_time_datetime = datetime.strptime(
+            start_time, '%Y-%m-%dT%H:%M:%SZ')
+        end_time_datetime = datetime.strptime(end_time, '%Y-%m-%dT%H:%M:%SZ')
+        copyDF = self.df.copy()
         filtered_df = self.filter_dataframe_by_time(
-            self.df, start_time, end_time)
+            copyDF, start_time_datetime, end_time_datetime)
         self.times = filtered_df["times"]
-        self.values = filtered_df["values"]
+        self.values = filtered_df[self.propertyName]
 
     def filter_dataframe_by_time(df: pd.DataFrame, start_time, end_time):
         df["times"] = pd.to_datetime(df["times"], utc=True)
-        df["times"] = pd.to_datetime(df["times"])
         filtered_df = df.loc[(df["times"] >= start_time)
                              & (df["times"] <= end_time)]
         return filtered_df
@@ -71,11 +75,11 @@ class DataPlot:
     def findMinimum(self):
         return min(self.values)
 
-
+# Testing stuffs
 # df = pd.DataFrame({
 #     'times': ['2020-01-17T23:48:00Z', '2020-01-17T23:49:00Z', '2020-01-17T23:50:00Z', '2020-01-17T23:51:00Z', '2020-01-17T23:52:00Z', '2020-01-17T23:53:00Z', '2020-01-17T23:54:00Z', '2020-01-17T23:55:00Z', '2020-01-17T23:56:00Z', '2020-01-17T23:57:00Z'],
-#     'values': [30.155257, 29.9799, 29.713417, 29.416833, 29.2752, 29.4671, 29.84755, 30.069133, 30.031567, 30.0993]
+#     'Temp avg': [30.155257, 29.9799, 29.713417, 29.416833, 29.2752, 29.4671, 29.84755, 30.069133, 30.031567, 30.0993]
 # })
 
 # plotObject = DataPlot(df, 'Temp avg')
-# plotObject.plot_data()
+# plotObject.get_plot().show()

@@ -10,6 +10,7 @@ from dataloader import loadData, createDataPlotObjects, plot_Acc, plot_Eda, plot
 datasetPath = "./Dataset/"
 
 
+# get dates for the dates dropdown on the dataloader
 def get_dates_from_folder():
     # get a list of all items in the directory
     items = os.listdir(datasetPath)
@@ -22,6 +23,7 @@ def get_dates_from_folder():
     return dates
 
 
+# plot the data properties
 def plotProperties(dataPlots: List[DataPlot]):
     for dataPlot in dataPlots:
         dataPlot.get_plot().show()
@@ -34,7 +36,7 @@ def set_date_period():
     # TODO: remove all elements from the user dropdown and replace them or destroy the dropdown and recreate one
 
 
-def get_users_within_time_period(start_date, end_date):
+def get_users_within_time_period(start_date: str, end_date: str):
     users = set()
     items = os.listdir(datasetPath)
     for item in items:
@@ -71,7 +73,7 @@ def submit():
     data = loadData(filter)
 
     # create a DataPlot class object for each column property within the pandas dataframe
-
+    global dataPlots
     dataPlots = createDataPlotObjects(data)
 
     # plot each of the data plots
