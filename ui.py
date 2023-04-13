@@ -130,7 +130,7 @@ def showErrorPopup(root, message):
     # Create the error popup
     error_popup = tk.Toplevel(root)
     error_popup.title('Error')
-    error_popup.geometry('300x150')
+    error_popup.geometry('350x200')
     # Set the popup to be on top of other windows
     error_popup.attributes('-topmost', True)
     # Set the function to call when the user closes the popup
