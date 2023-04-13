@@ -33,11 +33,14 @@ def plotProperties(dataPlots: List[DataPlot]):
 def validateDates():
     errorMessage = ""
     if start_date.get() > end_date.get():
-        errorMessage = "End Date cannot be greater than the Start Date"
+        errorMessage = "End Date cannot be greater than the Start Date."
     return errorMessage
 
 
 def set_users_in_date_period(root):
+    # reset selected user
+    user.set("")
+    # generate an error message if needed
     errorMessage = validateDates()
     if errorMessage == "":
         # get users that are in trials within the selected start and end dates
@@ -49,6 +52,9 @@ def set_users_in_date_period(root):
                 label=userString, command=tk._setit(user, userString))
         user.set(users[0])
     else:
+        # empty users dropdown
+        users_dropdown['menu'].delete(0, 'end')
+        # show error message popup
         showErrorPopup(root, errorMessage)
 
 
@@ -65,14 +71,25 @@ def get_users_within_time_period(start_date: str, end_date: str):
     return sorted(list(users))
 
 
+def validateUserWithinDateRange():
+    usersWithinSpecifiedDates = get_users_within_time_period(
+        start_date.get(), end_date.get())
+    if user.get() in usersWithinSpecifiedDates:
+        return True
+    else:
+        return False
+
+
 def validateForm():
     errorMessage = ""
     if start_date.get() > end_date.get():
-        errorMessage = "End Date cannot be greater than the Start Date"
+        errorMessage = "End Date cannot be greater than the Start Date."
     elif user.get() == "":
         errorMessage = "Please select a User to load data for."
     elif not ACC_Mag.get() and not Eda.get() and not temp.get() and not movement_intensity.get() and not step_count.get() and not rest.get() and not on_wrist.get():
-        errorMessage = "Please select atleast one data property to view"
+        errorMessage = "Please select atleast one data property to view."
+    elif not validateUserWithinDateRange():
+        errorMessage = "Selected user doesn't have recorded data within the specified date range."
     return errorMessage
 
 
