@@ -102,3 +102,42 @@ def plot_Temp(data: pd.DataFrame):
     plt.ylabel("temp Avg")
     plt.show()
     return fig
+
+
+#class for the options of graph types to use
+class Graph:
+       def __init__(self, x_data, y_data, graph_type = 'line'):
+            self.x_data = x_data
+            self.y_data = y_data
+            self.graph_type = graph_type
+       
+       def plot(self):
+            if self.graph_type == 'line':
+                plt.plot(self.x_data, self.y_data)
+            elif self.graph_type == 'scatter':
+                plt.scatter(self.x_data, self.y_data)
+            elif self.graph_type == 'bar':
+                plt.bar(self.x_data, self.y_data)
+            elif self.graph_type == 'histogram':
+                plt.hist(self.x_data, self.y_data)
+            elif self.graph_type == 'box':
+                plt.boxplot(self.x_data, self.y_data)
+            else:
+                raise ValueError('Invalid graph type')
+                
+       def set_graph_type(self, graph_type):
+           self.graph_type = graph_type
+            
+            
+#dropdown menu for choosing graph type
+graph_types = ['line', 'scatter', 'bar']
+dropdown = widgets.Dropdown(options = graph_types, value = graph.graph_type, description = 'Graph Type')
+
+def on_change(change):
+    if change['type'] == 'change' and change ['name'] == 'value':
+        graph.set_graph_type(change['new'])
+        plt.clf()
+        graph.plot()
+        
+dropdown.observe(on_change)
+display(dropdown)
