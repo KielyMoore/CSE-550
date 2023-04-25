@@ -119,9 +119,9 @@ class Graph:
             elif self.graph_type == 'bar':
                 plt.bar(self.x_data, self.y_data)
             elif self.graph_type == 'histogram':
-                plt.histogram(self.x_data, self.y_data)
+                plt.hist(self.x_data, self.y_data)
             elif self.graph_type == 'box':
-                plt.box(self.x_data, self.y_data)
+                plt.boxplot(self.x_data, self.y_data)
             else:
                 raise ValueError('Invalid graph type')
                 
