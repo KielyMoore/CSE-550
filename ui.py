@@ -4,7 +4,8 @@ import tkinter as tk
 from tkinter import ttk
 from datetime import datetime
 from Plot import DataPlot
-
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from matplotlib.figure import Figure
 from dataloader import loadData, createDataPlotObjects, plot_Acc, plot_Eda, plot_Temp
 
 datasetPath = "./Dataset/"
@@ -33,7 +34,7 @@ def plotProperties(dataPlots: List[DataPlot]):
 def validateDates():
     errorMessage = ""
     if start_date.get() > end_date.get():
-        errorMessage = "End Date cannot be greater than the Start Date."
+        errorMessage = "Start Date cannot be greater than the End Date."
     return errorMessage
 
 
@@ -83,7 +84,7 @@ def validateUserWithinDateRange():
 def validateForm():
     errorMessage = ""
     if start_date.get() > end_date.get():
-        errorMessage = "End Date cannot be greater than the Start Date."
+        errorMessage = "Start Date cannot be greater than the End Date."
     elif user.get() == "":
         errorMessage = "Please select a User to load data for."
     elif not ACC_Mag.get() and not Eda.get() and not temp.get() and not movement_intensity.get() and not step_count.get() and not rest.get() and not on_wrist.get():
@@ -117,8 +118,8 @@ def submit(root):
         # create a DataPlot class object for each column property within the pandas dataframe
         global dataPlots
         dataPlots = createDataPlotObjects(data)
-        # plot each of the data plots
-        plotProperties(dataPlots)
+        # plot all selected properties simultaneously
+        plot_selected_properties(dataPlots, root)
 
     else:
         showErrorPopup(root, errorMessage)
@@ -165,7 +166,7 @@ def create_widgets(root: tk):
 
     # Title label
     title_label = ttk.Label(
-        root, text="Wearable Sensor Data Application", font=("TkDefaultFont", 20))
+        root, text="Wearable Sensor Data Application", font=("TkDefaultFont", 14))
     title_label.grid(row=0, column=0, columnspan=5)
 
     # Start date dropdowns
@@ -262,3 +263,33 @@ def create_widgets(root: tk):
     submit_button = ttk.Button(
         root, text="Submit", command=lambda: submit(root))
     submit_button.grid(row=12, column=0, pady=15, padx=10)
+
+
+def plot_selected_properties(dataPlots, root):
+    # create popup window for plots
+    new_window = tk.Toplevel(root)
+    new_window.geometry('1000x1000')
+
+    colors = ['red', 'green', 'blue', 'maroon', 'purple', 'pink', 'orange']
+
+    i = 0
+    for dataPlot in dataPlots:
+        # create a Matplotlib figure and axis
+        # create a figure with a size of 5x4 inches and a DPI of 100
+        fig = Figure(figsize=(2, 1), dpi=100)
+        ax = fig.add_subplot(111)  # create a single subplot within the figure
+
+        # plot some data on the subplot
+        line, = ax.plot(dataPlot.times, dataPlot.values,
+                        label=dataPlot.propertyName, color=colors[i])
+        ax.legend(handles=[line], loc='upper left')  # add a legend to the plot
+
+        # create a canvas to display the figure in the Tkinter window
+        canvas = FigureCanvasTkAgg(fig, master=new_window)
+
+        # draw the figure on the canvas
+        canvas.draw()
+
+        # add the canvas to the Tkinter window using grid()
+        canvas.get_tk_widget().pack(side='top', fill='both', expand=True)
+        i += 1
