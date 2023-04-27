@@ -6,6 +6,7 @@ from datetime import datetime
 from Plot import DataPlot
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
+from matplotlib.ticker import MaxNLocator
 from dataloader import loadData, createDataPlotObjects, plot_Acc, plot_Eda, plot_Temp
 
 datasetPath = "./Dataset/"
@@ -268,7 +269,7 @@ def create_widgets(root: tk):
 def plot_selected_properties(dataPlots, root):
     # create popup window for plots
     new_window = tk.Toplevel(root)
-    new_window.geometry('1000x1000')
+    new_window.geometry('1000x800')
 
     colors = ['red', 'green', 'blue', 'maroon', 'purple', 'pink', 'orange']
 
@@ -282,7 +283,14 @@ def plot_selected_properties(dataPlots, root):
         # plot some data on the subplot
         line, = ax.plot(dataPlot.times, dataPlot.values,
                         label=dataPlot.propertyName, color=colors[i])
+
+        ax.xaxis.set_major_locator(MaxNLocator(20))
+        # slant the x-axis tick labels
+        ax.set_xticklabels(ax.get_xticklabels(), rotation=15, ha='center')
         ax.legend(handles=[line], loc='upper left')  # add a legend to the plot
+
+        # adjust subplot spacing
+        fig.subplots_adjust(bottom=0.3, top=0.7)
 
         # create a canvas to display the figure in the Tkinter window
         canvas = FigureCanvasTkAgg(fig, master=new_window)
