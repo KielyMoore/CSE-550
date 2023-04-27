@@ -127,17 +127,3 @@ class Graph:
                 
        def set_graph_type(self, graph_type):
            self.graph_type = graph_type
-            
-            
-#dropdown menu for choosing graph type
-graph_types = ['line', 'scatter', 'bar']
-dropdown = widgets.Dropdown(options = graph_types, value = graph.graph_type, description = 'Graph Type')
-
-def on_change(change):
-    if change['type'] == 'change' and change ['name'] == 'value':
-        graph.set_graph_type(change['new'])
-        plt.clf()
-        graph.plot()
-        
-dropdown.observe(on_change)
-display(dropdown)
