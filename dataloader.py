@@ -31,8 +31,6 @@ def loadData(filter):
     data = data.drop(columns=columns_to_drop, axis=1)
 
     print(data.columns)
-
-    print(data[["times", "Acc magnitude avg"]])
     # return the pandas data frame
     return data
 

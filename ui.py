@@ -163,9 +163,14 @@ def create_widgets(root: tk):
 
     dates = get_dates_from_folder()
 
+    # Title label
+    title_label = ttk.Label(
+        root, text="Wearable Sensor Data Application", font=("TkDefaultFont", 20))
+    title_label.grid(row=0, column=0, columnspan=5)
+
     # Start date dropdowns
     start_label = ttk.Label(root, text="Start Date:")
-    start_label.grid(row=3, column=0)
+    start_label.grid(row=3, column=0, pady=5)
 
     global start_date
     start_date = tk.StringVar()
@@ -176,7 +181,7 @@ def create_widgets(root: tk):
 
     # End date dropdowns
     end_label = ttk.Label(root, text="End Date:")
-    end_label.grid(row=3, column=1)
+    end_label.grid(row=3, column=1, pady=5)
 
     global end_date
     end_date = tk.StringVar()
@@ -187,29 +192,29 @@ def create_widgets(root: tk):
 
     set_dates_button = ttk.Button(
         root, text="Set Dates", command=lambda: set_users_in_date_period(root))
-    set_dates_button.grid(row=5, column=0)
+    set_dates_button.grid(row=4, column=2)
 
     # User dropdown
     user_label = tk.Label(root, text="User:")
-    user_label.grid(row=6, column=0)
+    user_label.grid(row=6, column=0, pady=20)
 
     global user
     user = tk.StringVar()
     global users_dropdown
     users_dropdown = ttk.OptionMenu(
         root, user, '')
-    users_dropdown.grid(row=7, column=0)
+    users_dropdown.grid(row=6, column=1)
 
     global localTime
     localTime = tk.BooleanVar(value=True)
     Local_Time_Check = ttk.Checkbutton(
         root, text="Local Time", variable=localTime)
-    Local_Time_Check.grid(row=8, column=0)
+    Local_Time_Check.grid(row=8, column=0, pady=5)
 
     # Graphed Properties
 
     user_label = tk.Label(root, text="Select Properties:")
-    user_label.grid(row=9, column=0)
+    user_label.grid(row=9, column=0, pady=5)
 
     global ACC_Mag
     ACC_Mag = tk.BooleanVar()
@@ -256,4 +261,4 @@ def create_widgets(root: tk):
     # Submit Button
     submit_button = ttk.Button(
         root, text="Submit", command=lambda: submit(root))
-    submit_button.grid(row=12, column=0)
+    submit_button.grid(row=12, column=0, pady=15, padx=10)
