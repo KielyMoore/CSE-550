@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from datetime import datetime, timezone, timedelta
 from Plot import DataPlot
+from ipywidgets import widgets
 
 
 def loadData(filter):
@@ -127,11 +128,10 @@ class Graph:
                 
        def set_graph_type(self, graph_type):
            self.graph_type = graph_type
-            
-            
-#dropdown menu for choosing graph type
+
+#dropdown widget          
 graph_types = ['line', 'scatter', 'bar']
-dropdown = widgets.Dropdown(options = graph_types, value = graph.graph_type, description = 'Graph Type')
+dropdown = create_widgets.Dropdown(options = graph_types, value = graph.graph_type, description = 'Graph Type')
 
 def on_change(change):
     if change['type'] == 'change' and change ['name'] == 'value':
