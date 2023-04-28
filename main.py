@@ -3,7 +3,7 @@ from ui import *
 if __name__ == "__main__":
     root = tk.Tk()
     root.geometry("450x500")
-    root.configure(bg='#87CEFA')
+    root.configure(bg='#CCE5F0')
     # Center elements vertically
     root.grid_columnconfigure(0, weight=1)
     root.grid_rowconfigure(0, weight=1)
