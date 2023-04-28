@@ -6,12 +6,17 @@ from Plot import DataPlot
 # from ipywidgets import widgets
 
 
-def loadData(filter):
+def loadData(filter, dataLocation):
     # Ideally data is loaded from a sever and stored locally
-    filePath = "./Dataset/" + datetime.strptime(
-        filter["start_date"], '%m/%d/%Y').strftime('%Y%m%d') + "/" + filter["user"] + "/summary.csv"
-    data = pd.read_csv(filePath)
-
+    data = pd.DataFrame()
+    csv_files = []
+    date = datetime.strptime(filter["start_date"], '%m/%d/%Y')
+    while(date <= datetime.strptime(filter["end_date"], '%m/%d/%Y')):
+        filePath = dataLocation + date.strftime('%Y%m%d') + "/" + filter["user"] + "/summary.csv"
+        csv_files.append(pd.read_csv(filePath))
+        date += timedelta(days=1)
+    data = pd.concat(csv_files, ignore_index=True)
+    
     # configure a new "times" column for the dataframe that will represent the timestamp values
     if filter["localTime"]:
         # fill the "times" column with calculated "Local Time" timestamps

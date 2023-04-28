@@ -69,10 +69,10 @@ def get_users_within_time_period(start_date: str, end_date: str):
         start_date, "%m/%d/%Y").strftime('%Y%m%d')
     end = datetime.strptime(end_date, "%m/%d/%Y").strftime('%Y%m%d')
     users = set()
-    for date_folder in os.listdir("./Dataset"):
+    for date_folder in os.listdir(datasetPath):
         if start <= date_folder <= end:
-            for user_folder in os.listdir(os.path.join("Dataset", date_folder)):
-                if os.path.isdir(os.path.join("Dataset", date_folder, user_folder)):
+            for user_folder in os.listdir(os.path.join(datasetPath, date_folder)):
+                if os.path.isdir(os.path.join(datasetPath, date_folder, user_folder)):
                     users.add(user_folder)
     return sorted(list(users))
 
@@ -119,7 +119,7 @@ def submit(root):
         }
         print(filter)
         # create panda's dataframe
-        data = loadData(filter)
+        data = loadData(filter, datasetPath)
         # create a DataPlot class object for each column property within the pandas dataframe
         global dataPlots
         dataPlots = createDataPlotObjects(data)
