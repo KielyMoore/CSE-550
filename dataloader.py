@@ -5,17 +5,13 @@ from datetime import datetime, timezone, timedelta
 from Plot import DataPlot
 
 
-def loadData(filter, dataLocation):
+
+def loadData(filter):
     # Ideally data is loaded from a sever and stored locally
-    data = pd.DataFrame()
-    csv_files = []
-    date = datetime.strptime(filter["start_date"], '%m/%d/%Y')
-    while(date <= datetime.strptime(filter["end_date"], '%m/%d/%Y')):
-        filePath = dataLocation + date.strftime('%Y%m%d') + "/" + filter["user"] + "/summary.csv"
-        csv_files.append(pd.read_csv(filePath))
-        date += timedelta(days=1)
-    data = pd.concat(csv_files, ignore_index=True)
-    
+    filePath = "./Dataset/" + datetime.strptime(
+        filter["start_date"], '%m/%d/%Y').strftime('%Y%m%d') + "/" + filter["user"] + "/summary.csv"
+    data = pd.read_csv(filePath)
+
     # configure a new "times" column for the dataframe that will represent the timestamp values
     if filter["localTime"]:
         # fill the "times" column with calculated "Local Time" timestamps
@@ -105,19 +101,51 @@ def plot_Temp(data: pd.DataFrame):
     plt.ylabel("temp Avg")
     plt.show()
     return fig
+def plot_ChangeTime(data: pd.DataFrame, leftLim, rightLim):
+    dataPlots = []
+    for col_name in data.columns:
+        if col_name != "times":
+            copy = data[["times", col_name]].copy()
+            plotObject = DataPlot(copy, col_name)
+            plt.xlim(left = leftLim, right = rightLim)
+            dataPlots.append(plotObject)
+ 
+    print(dataPlots)
+    return dataPlots
 
-
-# class for the options of graph types to use
+#class for the options of graph types to use
 class Graph:
-    def __init__(self, x_data, y_data, graph_type='line'):
-    self.x_data = x_data
-    self.y_data = y_data
-    self.graph_type = graph_type
+       def __init__(self, x_data, y_data, graph_type='line'):
+            self.x_data = x_data
+            self.y_data = y_data
+            self.graph_type = graph_type
 
-    def plot(self):
-        if self.graph_type == 'line':
-            plt.plot(self.x_data, self.y_data)
-        elif self.graph_type == 'scatter':
-            plt.scatter(self.x_data, self.y_data)
-        elif self.graph_type == 'bar':
-            plt.bar(self.x_data, self.y_data)
+       def plot(self):
+            if self.graph_type == 'line':
+                 plt.plot(self.x_data, self.y_data)
+            elif self.graph_type == 'scatter':
+                 plt.scatter(self.x_data, self.y_data)
+            elif self.graph_type == 'bar':
+                 plt.bar(self.x_data, self.y_data)
+#           elif self.graph_type == 'histogram':
+#                 plt.hist(self.x_data, self.y_data)
+#             elif self.graph_type == 'box':
+#                 plt.boxplot(self.x_data, self.y_data)
+#             else:
+#                 raise ValueError('Invalid graph type')
+
+#        def set_graph_type(self, graph_type):
+#            self.graph_type = graph_type
+
+    # dropdown widget
+    # graph_types = ['line', 'scatter', 'bar']
+    # dropdown = create_widgets.Dropdown(options = graph_types, value = graph.graph_type, description = 'Graph Type')
+
+    # def on_change(change):
+    #     if change['type'] == 'change' and change ['name'] == 'value':
+    #         graph.set_graph_type(change['new'])
+    #         plt.clf()
+    #         graph.plot()
+
+    #     dropdown.observe(on_change)
+    #     display(dropdown)
