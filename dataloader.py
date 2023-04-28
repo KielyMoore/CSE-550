@@ -3,7 +3,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 from datetime import datetime, timezone, timedelta
 from Plot import DataPlot
-from ipywidgets import widgets
 
 
 def loadData(filter):
@@ -119,25 +118,25 @@ class Graph:
                 plt.scatter(self.x_data, self.y_data)
             elif self.graph_type == 'bar':
                 plt.bar(self.x_data, self.y_data)
-            elif self.graph_type == 'histogram':
-                plt.hist(self.x_data, self.y_data)
-            elif self.graph_type == 'box':
-                plt.boxplot(self.x_data, self.y_data)
-            else:
-                raise ValueError('Invalid graph type')
+            # elif self.graph_type == 'histogram':
+               # plt.hist(self.x_data, self.y_data)
+            # elif self.graph_type == 'box':
+                # plt.boxplot(self.x_data, self.y_data)
+            # else:
+               # raise ValueError('Invalid graph type')
                 
-       def set_graph_type(self, graph_type):
-           self.graph_type = graph_type
+       # def set_graph_type(self, graph_type):
+          # self.graph_type = graph_type
 
-#dropdown widget          
-graph_types = ['line', 'scatter', 'bar']
-dropdown = create_widgets.Dropdown(options = graph_types, value = graph.graph_type, description = 'Graph Type')
+# dropdown widget          
+# graph_types = ['line', 'scatter', 'bar']
+# dropdown = create_widgets.Dropdown(options = graph_types, value = graph.graph_type, description = 'Graph Type')
 
-def on_change(change):
-    if change['type'] == 'change' and change ['name'] == 'value':
-        graph.set_graph_type(change['new'])
-        plt.clf()
-        graph.plot()
+# def on_change(change):
+#     if change['type'] == 'change' and change ['name'] == 'value':
+#        #graph.set_graph_type(change['new'])
+#        plt.clf()
+#        graph.plot()
         
-dropdown.observe(on_change)
-display(dropdown)
+# dropdown.observe(on_change)
+# display(dropdown)
