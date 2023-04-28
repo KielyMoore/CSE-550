@@ -113,21 +113,21 @@ def plot_ChangeTime(data: pd.DataFrame, leftLim, rightLim):
     print(dataPlots)
     return dataPlots
 
-# class for the options of graph types to use
-# class Graph:
-#        def __init__(self, x_data, y_data, graph_type='line'):
-#             self.x_data = x_data
-#             self.y_data = y_data
-#             self.graph_type = graph_type
+#class for the options of graph types to use
+class Graph:
+       def __init__(self, x_data, y_data, graph_type='line'):
+            self.x_data = x_data
+            self.y_data = y_data
+            self.graph_type = graph_type
 
-#        def plot(self):
-#             if self.graph_type == 'line':
-#                 plt.plot(self.x_data, self.y_data)
-#             elif self.graph_type == 'scatter':
-#                 plt.scatter(self.x_data, self.y_data)
-#             elif self.graph_type == 'bar':
-#                 plt.bar(self.x_data, self.y_data)
-#             elif self.graph_type == 'histogram':
+       def plot(self):
+            if self.graph_type == 'line':
+                 plt.plot(self.x_data, self.y_data)
+            elif self.graph_type == 'scatter':
+                 plt.scatter(self.x_data, self.y_data)
+            elif self.graph_type == 'bar':
+                 plt.bar(self.x_data, self.y_data)
+#           elif self.graph_type == 'histogram':
 #                 plt.hist(self.x_data, self.y_data)
 #             elif self.graph_type == 'box':
 #                 plt.boxplot(self.x_data, self.y_data)

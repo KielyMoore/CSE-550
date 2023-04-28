@@ -1,13 +1,16 @@
 import os
 from typing import List
 import tkinter as tk
+from tkinter import *
+
 from tkinter import ttk, Button
+
 from datetime import datetime
 from Plot import DataPlot
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
 from matplotlib.ticker import MaxNLocator
-from dataloader import loadData, createDataPlotObjects, plot_ChangeTime
+from dataloader import loadData, createDataPlotObjects, plot_ChangeTime, Graph
 
 datasetPath = "./Dataset/"
 
@@ -271,6 +274,13 @@ def create_widgets(root: tk):
         root, text="Submit", command=lambda: submit(root))
     submit_button.grid(row=12, column=0, pady=15, padx=10)
 
+   
+
+    variable = StringVar(root)
+
+    w = OptionMenu(root, variable ,"Line", "Scatter", "Bar")
+    w.grid(row=12, column=1)
+
 
 def plot_selected_properties(dataPlots, root):
     # create popup window for plots
@@ -334,6 +344,9 @@ def plot_selected_properties(dataPlots, root):
     value_right_label.pack(side =  'right',fill = 'both', expand = True)
     value_left_label = ttk.Label(new_window,text=get_current_left_value())
     value_left_label.pack(side =  'right',fill = 'both', expand = True)
+    variable = StringVar(new_window)
+    w = OptionMenu(new_window, variable ,"Line", "Scatter", "Bar")
+    w.pack(side =  'right',fill = 'both', expand = True)
     def callback():
         fll = float(get_current_left_value())
         flr = float(get_current_right_value())
@@ -358,12 +371,14 @@ def plot_selected_properties(dataPlots, root):
 
     # Create panda's dataframe using the filtered data and change the time using plt.xlim.
         data = loadData(filter)
+        graphType = variable.get()
+        print(graphType)
         plot_ChangeTime(data,fll,flr)
         dataPlots = createDataPlotObjects(data)
 
     # plot each of the data plots
        #plotProperties(dataPlots)
-        plot_selected_properties_lim(dataPlots, root, fll, flr)
+        plot_selected_properties_lim(dataPlots, root, fll, flr, graphType)
         #print(get_current_value())
         #dataPlot[times].length
 
@@ -371,7 +386,7 @@ def plot_selected_properties(dataPlots, root):
     b.pack(side = 'bottom',fill = 'both', expand = False)
     
 
-def plot_selected_properties_lim(dataPlots, root, leftLim, rightLim):
+def plot_selected_properties_lim(dataPlots, root, leftLim, rightLim, graphType):
     # create popup window for plots
     new_window = tk.Toplevel(root)
     new_window.geometry('1000x1000')
@@ -389,7 +404,12 @@ def plot_selected_properties_lim(dataPlots, root, leftLim, rightLim):
         #ax.set_xticklabels(ax.get_xticklabels(), rotation=15, ha='center')
         ax.set_xlim(left = leftLim, right = rightLim)
         # plot some data on the subplot
-        line, = ax.plot(dataPlot.times, dataPlot.values, label=dataPlot.propertyName, color=colors[i])
+        if(graphType == "Bar"):
+            line, = ax.bar(dataPlot.times, dataPlot.values, label=dataPlot.propertyName, color=colors[i])
+        elif (graphType == "Scatter"):
+            line, = ax.scatter(dataPlot.times, dataPlot.values, label=dataPlot.propertyName, color=colors[i])
+        else:
+            line, = ax.plot(dataPlot.times, dataPlot.values, label=dataPlot.propertyName, color=colors[i])
         #plt.xlim(line, left = leftLim, right = rightLim)
         ax.legend(handles=[line], loc='upper left')  # add a legend to the plot
         
