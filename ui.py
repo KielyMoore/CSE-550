@@ -1,13 +1,16 @@
 import os
 from typing import List
 import tkinter as tk
-from tkinter import ttk
+from tkinter import *
+
+from tkinter import ttk, Button
+
 from datetime import datetime
 from Plot import DataPlot
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
 from matplotlib.ticker import MaxNLocator
-from dataloader import loadData, createDataPlotObjects, plot_Acc, plot_Eda, plot_Temp
+from dataloader import loadData, createDataPlotObjects, plot_ChangeTime, Graph
 
 datasetPath = "./Dataset/"
 
@@ -69,10 +72,10 @@ def get_users_within_time_period(start_date: str, end_date: str):
         start_date, "%m/%d/%Y").strftime('%Y%m%d')
     end = datetime.strptime(end_date, "%m/%d/%Y").strftime('%Y%m%d')
     users = set()
-    for date_folder in os.listdir(datasetPath):
+    for date_folder in os.listdir("./Dataset"):
         if start <= date_folder <= end:
-            for user_folder in os.listdir(os.path.join(datasetPath, date_folder)):
-                if os.path.isdir(os.path.join(datasetPath, date_folder, user_folder)):
+            for user_folder in os.listdir(os.path.join("Dataset", date_folder)):
+                if os.path.isdir(os.path.join("Dataset", date_folder, user_folder)):
                     users.add(user_folder)
     return sorted(list(users))
 
@@ -119,7 +122,7 @@ def submit(root):
         }
         print(filter)
         # create panda's dataframe
-        data = loadData(filter, datasetPath)
+        data = loadData(filter)
         # create a DataPlot class object for each column property within the pandas dataframe
         global dataPlots
         dataPlots = createDataPlotObjects(data)
@@ -271,7 +274,14 @@ def create_widgets(root: tk):
         root, text="Submit", command=lambda: submit(root))
     submit_button.grid(row=12, column=0, pady=15, padx=10)
 
+    
+    
+    variable = StringVar(root)
+    
+    w = OptionMenu(root, variable ,"Line", "Scatter", "Bar")
+    w.grid(row=12, column=1)
 
+    
 def plot_selected_properties(dataPlots, root):
     # create popup window for plots
     new_window = tk.Toplevel(root)
@@ -307,3 +317,159 @@ def plot_selected_properties(dataPlots, root):
         # add the canvas to the Tkinter window using grid()
         canvas.get_tk_widget().pack(side='top', fill='both', expand=True)
         i += 1
+
+#Sliders		
+    current_left_value = tk.IntVar()		
+    current_right_value = tk.IntVar()		
+    def get_current_left_value():		
+       return '{: .2f}'.format(current_left_value.get())		
+    		
+    def get_current_right_value():		
+        return '{: .2f}'.format(current_right_value.get())		
+    def left_slider_changed(event):		
+        value_left_label.configure(text=get_current_left_value())		
+    def right_slider_changed(event):		
+        value_right_label.configure(text=get_current_right_value())		
+       		
+    	
+    slider_right = ttk.Scale(new_window,from_=0,to=1500,orient='horizontal',command=right_slider_changed,variable=current_right_value)	
+    slider_right.pack(side = 'right',fill ='both', expand = True)	
+    slider_right_label = ttk.Label(new_window,text='Right time filter:')	
+    slider_right_label.pack(side = 'right',fill ='both', expand = True)	
+    slider_left = ttk.Scale(new_window,from_=0,to=1500,orient='horizontal',command=left_slider_changed,variable=current_left_value)	
+    slider_left.pack(side = 'right',fill ='both', expand = True)	
+    slider_left_label = ttk.Label(new_window,text='Left time filter:')	
+    slider_left_label.pack(side = 'right',fill ='both', expand = True)	
+    value_right_label = ttk.Label(new_window,text=get_current_right_value())	
+    value_right_label.pack(side =  'right',fill = 'both', expand = True)	
+    value_left_label = ttk.Label(new_window,text=get_current_left_value())	
+    value_left_label.pack(side =  'right',fill = 'both', expand = True)	
+    variable = StringVar(new_window)	
+    w = OptionMenu(new_window, variable ,"Line", "Scatter", "Bar")	
+    w.pack(side =  'right',fill = 'both', expand = True)	
+    def callback():	
+        fll = float(get_current_left_value())	
+        flr = float(get_current_right_value())	
+        #plotProperties(dataPlots, fl)	
+        	
+        filter = {	
+        "start_date": start_date.get(),	
+        "end_date": end_date.get(),	
+        "user": user.get(),	
+        "localTime": localTime.get(),	
+        "columns": {	
+            "Acc magnitude avg": ACC_Mag.get(),	
+            "Eda avg": Eda.get(),	
+            "Temp avg": temp.get(),	
+            "Movement intensity": movement_intensity.get(),	
+            "Steps count": step_count.get(),	
+            "Rest": rest.get(),	
+            "On Wrist": on_wrist.get()	
+            }	
+        }	
+        print(filter)	
+    # Create panda's dataframe using the filtered data and change the time using plt.xlim.	
+        data = loadData(filter)	
+        graphType = variable.get()	
+        print(graphType)	
+        plot_ChangeTime(data,fll,flr)	
+        dataPlots = createDataPlotObjects(data)	
+    # plot each of the data plots	
+       #plotProperties(dataPlots)	
+        plot_selected_properties_lim(dataPlots, root, fll, flr, graphType)	
+        #print(get_current_value())	
+        #dataPlot[times].length	
+    b = Button(new_window, text = "Change Scope", width = 10, command = callback)	
+    b.pack(side = 'bottom',fill = 'both', expand = False)	
+    	
+def plot_selected_properties_lim(dataPlots, root, leftLim, rightLim, graphType):	
+    # create popup window for plots	
+    new_window = tk.Toplevel(root)	
+    new_window.geometry('1000x1000')	
+    colors = ['red', 'green', 'blue', 'maroon', 'purple', 'pink', 'orange']	
+     	
+    i = 0	
+    for dataPlot in dataPlots:	
+        # create a Matplotlib figure and axis	
+        	
+        fig = Figure(figsize=(2, 1), dpi=100)  # create a figure with a size of 5x4 inches and a DPI of 100	
+        ax = fig.add_subplot(111)  # create a single subplot within the figure	
+        #ax.xaxis.set_major_locator(MaxNLocator(20))	
+        # slant the x-axis tick labels	
+        #ax.set_xticklabels(ax.get_xticklabels(), rotation=15, ha='center')	
+        ax.set_xlim(left = leftLim, right = rightLim)	
+        # plot some data on the subplot	
+        if(graphType == "Bar"):	
+            line, = ax.bar(dataPlot.times, dataPlot.values, label=dataPlot.propertyName, color=colors[i])	
+        elif (graphType == "Scatter"):	
+            line, = ax.scatter(dataPlot.times, dataPlot.values, label=dataPlot.propertyName, color=colors[i])	
+        else:	
+            line, = ax.plot(dataPlot.times, dataPlot.values, label=dataPlot.propertyName, color=colors[i])	
+        #plt.xlim(line, left = leftLim, right = rightLim)	
+        ax.legend(handles=[line], loc='upper left')  # add a legend to the plot	
+        	
+        # create a canvas to display the figure in the Tkinter window	
+        canvas = FigureCanvasTkAgg(fig, master=new_window)	
+        # draw the figure on the canvas	
+        canvas.draw()	
+        # add the canvas to the Tkinter window using grid()	
+        canvas.get_tk_widget().pack(side='top', fill='both', expand=True)	
+        i += 1	
+    #Sliders	
+    current_left_value = tk.IntVar()	
+    current_right_value = tk.IntVar()	
+    def get_current_left_value():	
+       return '{: .2f}'.format(current_left_value.get())	
+    	
+    def get_current_right_value():	
+        return '{: .2f}'.format(current_right_value.get())	
+    def left_slider_changed(event):	
+        value_left_label.configure(text=get_current_left_value())	
+    def right_slider_changed(event):	
+        value_right_label.configure(text=get_current_right_value())	
+       	
+    	
+    slider_right = ttk.Scale(new_window,from_=0,to=1500,orient='horizontal',command=right_slider_changed,variable=current_right_value)	
+    slider_right.pack(side = 'right',fill ='both', expand = True)	
+    slider_right_label = ttk.Label(new_window,text='Right time filter:')	
+    slider_right_label.pack(side = 'right',fill ='both', expand = True)	
+    slider_left = ttk.Scale(new_window,from_=0,to=1500,orient='horizontal',command=left_slider_changed,variable=current_left_value)	
+    slider_left.pack(side = 'right',fill ='both', expand = True)	
+    slider_left_label = ttk.Label(new_window,text='Left time filter:')	
+    slider_left_label.pack(side = 'right',fill ='both', expand = True)	
+    value_right_label = ttk.Label(new_window,text=get_current_right_value())	
+    value_right_label.pack(side =  'right',fill = 'both', expand = True)	
+    value_left_label = ttk.Label(new_window,text=get_current_left_value())	
+    value_left_label.pack(side =  'right',fill = 'both', expand = True)	
+    def callback():	
+        fll = float(get_current_left_value())	
+        flr = float(get_current_right_value())	
+        #plotProperties(dataPlots, fl)	
+        	
+        filter = {	
+        "start_date": start_date.get(),	
+        "end_date": end_date.get(),	
+        "user": user.get(),	
+        "localTime": localTime.get(),	
+        "columns": {	
+            "Acc magnitude avg": ACC_Mag.get(),	
+            "Eda avg": Eda.get(),	
+            "Temp avg": temp.get(),	
+            "Movement intensity": movement_intensity.get(),	
+            "Steps count": step_count.get(),	
+            "Rest": rest.get(),	
+            "On Wrist": on_wrist.get()	
+            }	
+        }	
+        print(filter)	
+    # Create panda's dataframe using the filtered data and change the time using plt.xlim.	
+        data = loadData(filter)	
+        plot_ChangeTime(data,fll,flr)	
+        dataPlots = createDataPlotObjects(data)	
+    # plot each of the data plots	
+       #plotProperties(dataPlots)	
+        plot_selected_properties_lim(dataPlots, root,fll,flr)	
+        #print(get_current_value())	
+        #dataPlot[times].length	
+    b = Button(new_window, text = "Change Scope", width = 10, command = callback)	
+    b.pack(side = 'bottom',fill = 'both', expand = False)
