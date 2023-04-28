@@ -40,8 +40,7 @@ def validateDates():
 
 
 def set_users_in_date_period(root):
-    # reset selected user
-    user.set("")
+    previousUser = user.get()
     # generate an error message if needed
     errorMessage = validateDates()
     if errorMessage == "":
@@ -52,8 +51,13 @@ def set_users_in_date_period(root):
         for userString in users:
             users_dropdown['menu'].add_command(
                 label=userString, command=tk._setit(user, userString))
-        user.set(users[0])
+        if previousUser in users:
+            user.set(previousUser)
+        else:
+            user.set(users[0])
     else:
+        # reset selected user
+        user.set("")
         # empty users dropdown
         users_dropdown['menu'].delete(0, 'end')
         # show error message popup
@@ -163,11 +167,17 @@ def close_popup(root, popup):
 
 def create_widgets(root: tk):
 
+    # Create a style object
+    style = ttk.Style()
+
+    # Set the style's background color to match the root
+    style.configure(".", background=root.cget("background"))
+
     dates = get_dates_from_folder()
 
     # Title label
     title_label = ttk.Label(
-        root, text="Wearable Sensor Data Application", font=("TkDefaultFont", 14))
+        root, text="Wearable Sensor Data Application", font=("Arial", 20))
     title_label.grid(row=0, column=0, columnspan=5)
 
     # Start date dropdowns
@@ -178,7 +188,7 @@ def create_widgets(root: tk):
     start_date = tk.StringVar()
     global start_date_dropdown
     start_date_dropdown = ttk.OptionMenu(
-        root, start_date, dates[0], *dates)
+        root, start_date, dates[0], *dates, command=lambda _: set_users_in_date_period(root))
     start_date_dropdown.grid(row=4, column=0)
 
     # End date dropdowns
@@ -189,15 +199,11 @@ def create_widgets(root: tk):
     end_date = tk.StringVar()
     global end_date_dropdown
     end_date_dropdown = ttk.OptionMenu(
-        root, end_date, dates[0], *dates)
+        root, end_date, dates[0], *dates, command=lambda _: set_users_in_date_period(root))
     end_date_dropdown.grid(row=4, column=1)
 
-    set_dates_button = ttk.Button(
-        root, text="Set Dates", command=lambda: set_users_in_date_period(root))
-    set_dates_button.grid(row=4, column=2)
-
     # User dropdown
-    user_label = tk.Label(root, text="User:")
+    user_label = ttk.Label(root, text="User:")
     user_label.grid(row=6, column=0, pady=20)
 
     global user
@@ -215,7 +221,7 @@ def create_widgets(root: tk):
 
     # Graphed Properties
 
-    user_label = tk.Label(root, text="Select Properties:")
+    user_label = ttk.Label(root, text="Select Properties:")
     user_label.grid(row=9, column=0, pady=5)
 
     global ACC_Mag
