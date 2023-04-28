@@ -119,7 +119,7 @@ class DataPlot:
         return float(sum(self.values)) / float(len(self.values))
 
     def calculateStandardDev(self):
-        statistics.stdev(self.values)
+        return statistics.stdev(self.values)
 
     def calculateMedian(self):
         return statistics.median(self.values)
